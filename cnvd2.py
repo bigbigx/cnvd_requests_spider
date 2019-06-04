@@ -8,7 +8,7 @@ import codecs
 from datetime import date
 from multiprocessing.dummy import Pool as Threadpool
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, String, ForeignKey, TEXT, Index
+from sqlalchemy import Column, Integer, String, ForeignKey, TEXT, Index, DATE
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import create_engine
 
@@ -26,7 +26,7 @@ class Cnvdtable(Base):
     cn_url = Column(String(64))
     cn_title = Column(TEXT)
     cnvd_id = Column(String(32))
-    pub_date = Column(String(32))
+    pub_date = Column(DATE)
     hazard_level = Column(String(32))
     cn_impact = Column(TEXT)
     cve_id = Column(String(32))
