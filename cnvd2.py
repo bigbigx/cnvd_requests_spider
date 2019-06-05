@@ -83,7 +83,7 @@ class Cnvdspider(object):
         print(self.count)
         if(self.count == 5):
             self.cookies = COOKIES()
-            self.count = 1
+            self.count = 0
         html = requests.get(url, headers=self.headers,
                             cookies=self.cookies).content.decode()
         html = etree.HTML(html)
