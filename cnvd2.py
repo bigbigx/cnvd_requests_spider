@@ -14,6 +14,8 @@ from sqlalchemy import create_engine
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import ast
+
+
 def COOKIES():
     chrome_options = Options()
     # 加上下面两行，解决报错
@@ -28,11 +30,11 @@ def COOKIES():
         #     cookie += "'"+c['name'] + "':'" + c['value'] + "'"
         # else:
         cookie += "'"+c['name'] + "':'" + c['value'] + "',"
-    cookie=ast.literal_eval('{'+cookie+'}')
+    cookie = ast.literal_eval('{'+cookie+'}')
     driver.quit()
     return cookie
-    
-    
+
+
 engine = create_engine(
     "mysql+pymysql://root:root@localhost/scrapy?charset=utf8", max_overflow=5)
 Base = declarative_base()
@@ -66,6 +68,9 @@ Base.metadata.create_all(engine)
 
 
 class Cnvdspider(object):
+    count = 0
+    cookies = COOKIES()
+
     def __init__(self):
         self.headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"}
@@ -74,7 +79,13 @@ class Cnvdspider(object):
 
     def parse(self, url):
         time.sleep(random.randint(1, 2))
-        html = requests.get(url, headers=self.headers, cookies=COOKIES()).content.decode()
+        self.count += 1
+        print(self.count)
+        if(self.count == 5):
+            self.cookies = COOKIES()
+            self.count = 1
+        html = requests.get(url, headers=self.headers,
+                            cookies=self.cookies).content.decode()
         html = etree.HTML(html)
         return html
 
