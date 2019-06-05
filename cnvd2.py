@@ -11,6 +11,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, ForeignKey, TEXT, Index, DATE
 from sqlalchemy.orm import sessionmaker, relationship
 from sqlalchemy import create_engine
+from .a import COOKIES
 
 engine = create_engine(
     "mysql+pymysql://root:root@localhost/scrapy?charset=utf8", max_overflow=5)
@@ -53,7 +54,7 @@ class Cnvdspider(object):
 
     def parse(self, url):
         time.sleep(random.randint(1, 2))
-        html = requests.get(url, headers=self.headers).content.decode()
+        html = requests.get(url, headers=self.headers, cookies=COOKIES()).content.decode()
         html = etree.HTML(html)
         return html
 
