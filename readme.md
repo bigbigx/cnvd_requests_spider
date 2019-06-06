@@ -29,9 +29,13 @@
 
 * 使用sqlchemy保存数据,也可以改为csv文件存储
 
-* 使用selenium反反爬虫
+* 使用selenium反反爬虫,主要是获取cookie,每隔5次爬取自动打开浏览器获取一下新cookie
+
+## 注意
 
 * 使用前请务必修改数据库的连接信息与User-Agent,UA必须与chromedriver的版本一致
+
+* mysql务必使用utf8字符集创建数据库
 
 ## 运行
 
