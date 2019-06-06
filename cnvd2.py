@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import requests
 from lxml import etree
 import csv
@@ -15,31 +16,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import ast
 
-
-def COOKIES():
-    chrome_options = Options()
-    # 加上下面两行，解决报错
-    chrome_options.add_argument('--no-sandbox')
-    chrome_options.add_argument('--disable-dev-shm-usage')
-    driver = webdriver.Chrome(chrome_options=chrome_options)
-    driver.get("https://www.cnvd.org.cn/flaw/list.htm?max=20&offset=2050")
-    cj = driver.get_cookies()
-    cookie = ''
-    for c in cj:
-        # if (c==cj[-1]):
-        #     cookie += "'"+c['name'] + "':'" + c['value'] + "'"
-        # else:
-        cookie += "'"+c['name'] + "':'" + c['value'] + "',"
-    cookie = ast.literal_eval('{'+cookie+'}')
-    driver.quit()
-    return cookie
-
-
-engine = create_engine(
-    "mysql+pymysql://root:root@localhost/scrapy?charset=utf8", max_overflow=5)
 Base = declarative_base()
-Session = sessionmaker(bind=engine)
-session = Session()
 
 
 class Cnvdtable(Base):
@@ -64,25 +41,43 @@ class Cnvdtable(Base):
     )
 
 
-Base.metadata.create_all(engine)
+engine = create_engine(
+    "mysql+pymysql://root:root@localhost/scrapy?charset=utf8", max_overflow=5)
 
+Base.metadata.create_all(engine)
+Session = sessionmaker(bind=engine)
+session = Session()
 
 class Cnvdspider(object):
-    count = 0
-    cookies = COOKIES()
-
     def __init__(self):
         self.headers = {
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36"}
         # 如果从某处断线了，可以更改起始的url地址
         self.start_url = "http://www.cnvd.org.cn/flaw/list.htm?max=20&offset=20"
+        self.count = 0
+        self.cookies = self.get_cookies()
+
+    def get_cookies(self):
+        chrome_options = Options()
+        # 加上下面两行，解决报错
+        chrome_options.add_argument('--no-sandbox')
+        chrome_options.add_argument('--disable-dev-shm-usage')
+        driver = webdriver.Chrome(chrome_options=chrome_options)
+        driver.get("https://www.cnvd.org.cn/flaw/list.htm?max=20&offset=2050")
+        cj = driver.get_cookies()
+        cookie = ''
+        for c in cj:
+            cookie += "'"+c['name'] + "':'" + c['value'] + "',"
+        cookie = ast.literal_eval('{'+cookie+'}')
+        driver.quit()
+        return cookie
 
     def parse(self, url):
         time.sleep(random.randint(1, 2))
         self.count += 1
         print(self.count)
         if(self.count == 5):
-            self.cookies = COOKIES()
+            self.cookies = self.get_cookies()
             self.count = 0
         html = requests.get(url, headers=self.headers,
                             cookies=self.cookies).content.decode()
