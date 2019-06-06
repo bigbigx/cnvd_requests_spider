@@ -48,6 +48,7 @@ Base.metadata.create_all(engine)
 Session = sessionmaker(bind=engine)
 session = Session()
 
+
 class Cnvdspider(object):
     def __init__(self):
         self.headers = {
