@@ -39,4 +39,4 @@
 
 ## 运行
 
-`python3 cnvd2.py`
+`sudo python3 cnvd2.py`
